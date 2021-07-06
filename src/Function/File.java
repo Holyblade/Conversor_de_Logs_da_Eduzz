@@ -11,19 +11,18 @@ import java.util.Scanner;
 
 public class File {
 
+	public String Sobrenome;
+
 	public void readFile(String File, String OutputDirectory) throws Exception {
 		BufferedReader Buffer = new BufferedReader(new InputStreamReader(new FileInputStream(File), "UTF-8"));
 		String Line = Buffer.readLine();
 		while (Line != null) {
-			System.out.println("Linha: " + Line);
 			Line = Buffer.readLine();
 			Scanner helperScanner = new Scanner(Line);
 			helperScanner.useDelimiter(";");
 			int usableData = 0;
 			while (helperScanner.hasNext()) {
 				String WritingData = helperScanner.next();
-				// dados a serem usados no relatório simples da Eduzz são os das colunas 18, 28,
-				// 29 e 30
 				if (usableData == 18) {
 					helperScanner.next();
 					helperScanner.next();
@@ -34,8 +33,25 @@ public class File {
 					helperScanner.next();
 					helperScanner.next();
 					helperScanner.next();
-					String textToWritePreFormated = helperScanner.next() + ";" + helperScanner.next() + ";"
-							+ helperScanner.next() + ";" + WritingData;
+					helperScanner.next();
+					WritingData = WritingData.replaceAll(",", ".");
+					String AuxNome = helperScanner.next();
+					Scanner ScanName = new Scanner(AuxNome);
+					ScanName.useDelimiter(" ");
+					String Nome = ScanName.next();
+					try {
+						Sobrenome = ScanName.next();
+						while (ScanName.hasNext()) {
+							Sobrenome = Sobrenome + " " + ScanName.next();
+						}
+					} catch (Exception Ex) {
+						Sobrenome = "SemSobrenome";
+					}
+					ScanName.close();
+					String Email = helperScanner.next();
+					String Telefone = helperScanner.next();
+					String textToWritePreFormated = WritingData + "," + Nome + "," + Sobrenome + "," + Email + ","
+							+ Telefone;
 					String variableForFormat = Character.toString('"');
 					String textToWriteFormated = textToWritePreFormated.replaceAll(variableForFormat, "");
 					writeFile(textToWriteFormated, OutputDirectory);
@@ -49,7 +65,7 @@ public class File {
 	}
 
 	public void writeFile(String Line, String OutputDirectory) throws IOException {
-		Writer File = new BufferedWriter(new FileWriter(OutputDirectory + "Output_EDUZZ.txt", true));
+		Writer File = new BufferedWriter(new FileWriter(OutputDirectory + "Compradores_Eduzz.txt", true));
 		File.append(Line + "\n");
 		File.close();
 	}
